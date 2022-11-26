@@ -1,0 +1,16 @@
+{
+	"name": "C++ dev",
+	"build": { 
+		"dockerfile": "Dockerfile.cpp"},
+	// "customizations": {
+	// 	"vscode": {
+	// 		"extensions": [
+	// 			"ms-vscode.cpptools-extension-pack",
+	// 			"ms-vscode.cmake-tools",
+	// 			"ms-vscode.makefile-tools",
+	// 			"DavidAnson.vscode-markdownlint",
+	// 			"xaver.clang-format"
+	// 		]
+	// 	}
+	// }
+}
