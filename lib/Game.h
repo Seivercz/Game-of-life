@@ -1,6 +1,7 @@
 #include "Matrix.h"
 #include <tuple>
 #include <utility>
+#include <cstdlib>
 
 template <typename T> class Game {
 private:
@@ -21,9 +22,9 @@ private:
                   bool isAlive) {
     // Rule 1, 2, 3
     if (isAlive)
-      return (aliveCount < 2 or aliveCount > 3) ? deadValue : aliveValue;
+      return (aliveCount < 2 or aliveCount > 3) ? false : true;
     // rule 4
-    return aliveCount == 3 ? aliveValue : deadValue;
+    return aliveCount == 3 ? true : false;
   }
 
   /// @brief Counts the amount of dead/alive cells in given cell location
@@ -48,13 +49,13 @@ private:
       boundY.second = 0;
 
     // cycle the boundaries around and count for dead/alive cells
-    for (auto i = x + boundX.first; i < (x + boundX.second); i++) {
-      for (auto j = y + boundY.first; j < (y + boundY.second); j++) {
+    for (auto i = x + boundX.first; i <= (x + boundX.second); i++) {
+      for (auto j = y + boundY.first; j <= (y + boundY.second); j++) {
         // aliveCells += gameField.getValue(i, j) == aliveValue ? 1 : 0;
         // deadCells += gameField.getValue(i, j) == deadValue ? 1 : 0;
-        if (i != x and j != y) {
-          deadCells, aliveCells += gameField.getValue(i, j) == deadValue ? 1,
-              0 : 0, 1;
+        if (i != x or j != y) {
+          deadCells += gameField.getValue(i, j) == deadValue ? 1 : 0;
+          aliveCells += gameField.getValue(i, j) == aliveValue ? 1 : 0;
         }
       }
     }
@@ -73,22 +74,38 @@ public:
     gameFieldEvolved = gameField; // setup for later-on evolve stages
   }
 
+  Game(Matrix<T> mat, T dead, T alive) {
+    deadValue = dead;
+    aliveValue = alive;
+    gameField = mat;
+    gameFieldEvolved = gameField;
+  }
+  
+
   /// @brief Takes game field and evolves it according to the rules
   /// @param evolutions: Number of evolutions (rounds) to be done
   void evolveGame(uint evolutions) {
-    if (evolutions != 0) {
+    if (evolutions > 0) {
       int deadCells, aliveCells = 0;
       for (size_t i = 0; i < gameField.getsizeM() - 1; i++) {
         for (size_t j = 0; j < gameField.getsizeN() - 1; j++) {
           std::tie(deadCells, aliveCells) = checkAroundCell(i, j);
-          bool cellState =
-              applyRules(deadCells, aliveCells, i, j, isCellAlive(i, j));
-          gameFieldEvolved.setValue(i, j, cellState);
+          bool cellState = applyRules(deadCells, aliveCells, i, j, isCellAlive(i, j));
+          gameFieldEvolved.setValue(i, j, cellState ? aliveValue : deadValue);
         }
       }
       gameField = gameFieldEvolved;
-      evolveGame(evolutions--);
+      evolutions--;
+      evolveGame(evolutions);
     }
+  }
+
+  void randomizeField() {
+    srand(time(NULL));
+    for (int i = 0; i < gameField.getsizeM() - 1; i++)
+        for (int j = 0; j < gameField.getsizeN() - 1; j++)
+          gameField.setValue(i, j, rand()%2 == 0 ? deadValue : aliveValue);
+    gameFieldEvolved = gameField;
   }
 
   void printGameField() { gameField.Print(); }

@@ -1,20 +1,33 @@
 #include "Game.h"
 #include <iostream>
-
+#include <string>
 
 int main() {
 
   std::cout << "Hello, peasant" << std::endl;
-  auto test = Matrix<int>(0, 5, 5);
-  test.Print();
-  auto gameOfLife = Game<int>(5, 5, 0, 1);
 
-  std::cout << "Game field round 0:" << std::endl;
-  gameOfLife.printGameField();
+  std::cout << "Insert dimensions of the game (MxN) \n";
+  int m,n;
+  std::cout << "M:";
+  std::cin >> m;
+  std::cout << "N:";
+  std::cin >> n;
 
-  gameOfLife.evolveGame(1);
+  std::cout << "Starting field will be randomized";
 
-  std::cout << "Game field round 1:" << std::endl;
-  gameOfLife.printGameField();
+  auto gameOfLife = Game<std::string>(m, n, "o", "x");
+  gameOfLife.randomizeField();
+  int roundCounter = 0;
+
+  while (std::cin.get() != 'q') {
+
+    std::cout << "Game field round 0:" << std::endl;
+    gameOfLife.printGameField();
+
+    std::cout << '\n' << "Press a key to for next round or q to end" << std::endl;;
+    gameOfLife.evolveGame(1);
+
+  }
+
   return 0;
 }

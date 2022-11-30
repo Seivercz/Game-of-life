@@ -1,10 +1,10 @@
 #include <cstddef>
 #include <iostream>
 
-template <typename T>
 // original:
 // https://www.bestprog.net/en/2019/08/23/c-an-example-of-creating-a-template-class-matrix-dynamic-memory-allocation/
-class Matrix {
+
+template <typename T> class Matrix {
 private:
   T **M; // THE matrix
   int m; // Column length
@@ -28,16 +28,15 @@ public:
     n = _n;
 
     // Allocate memory for columns
-    M = (T **)new T *[m];
+    M = new T *[m];
 
     // Allocate memory for row length to each column
     for (size_t i = 0; i < m; i++)
-      M[i] = (T *)new T[n];
+      M[i] = new T[n];
 
-    for (size_t i = 0; i < m; i++) {
+    for (size_t i = 0; i < m; i++)
       for (size_t j = 0; j < n; j++)
         M[i][j] = defaultValue;
-    }
   }
 
   // copy constructor
@@ -77,13 +76,32 @@ public:
   /**
    * Copy operator
    */
-  Matrix operator=(const T &_M) { ~Matrix(); }
+  Matrix operator=(const Matrix<T> &_M) {
+    if (n > 0) {
+      for (size_t i = 0; i < m; i++)
+        delete[] M[i];
+    }
+    if (m > 0)
+      delete[] M;
+
+    m = _M.m;
+    n = _M.n;
+
+    M = (T **)new T *[m];
+    for (size_t i = 0; i < m; i++) {
+      M[i] = (T *)new T[n];
+    }
+    for (size_t i = 0; i < m; i++)
+      for (size_t j = 0; j < n; j++)
+        M[i][j] = _M.M[i][j];
+    return *this;
+  }
 
   void Print() {
     std::cout << std::endl;
     for (size_t i = 0; i < m; i++) {
       for (size_t j = 0; j < n; j++)
-        std::cout << M[i][j] << "\t";
+        std::cout << M[i][j] << " ";
       std::cout << std::endl;
     }
     std::cout << std::endl;
